@@ -328,6 +328,28 @@
     }
     .btn-new-post:hover { background: var(--primary-dark); }
 
+    /* COVER UPLOAD */
+    .cover-field-wrap { display: flex; flex-direction: column; gap: 8px; }
+    .cover-upload-row { display: flex; gap: 8px; align-items: center; }
+    .btn-upload {
+      display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+      height: 40px; padding: 0 14px;
+      border: 1.5px dashed var(--border); border-radius: var(--r-sm);
+      background: var(--surface-2); font-family: var(--font);
+      font-size: 12.5px; font-weight: 600; color: var(--text-2);
+      cursor: pointer; transition: all .18s;
+    }
+    .btn-upload:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-bg); }
+    .cover-or { font-size: 11px; color: var(--text-3); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; flex-shrink: 0; }
+    .cover-preview { width: 100%; height: 120px; border-radius: var(--r-sm); object-fit: cover; margin-top: 4px; display: none; border: 1px solid var(--border); }
+    .cover-clear {
+      display: none; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 600; color: var(--danger);
+      background: none; border: none; cursor: pointer; font-family: var(--font);
+      padding: 0; margin-top: 4px;
+    }
+    .cover-clear.visible { display: inline-flex; }
+
     /* RESPONSIVE */
     @media (max-width: 900px) {
       .editor-layout { grid-template-columns: 1fr; }
@@ -509,9 +531,23 @@
               </select>
             </div>
             <div class="field-row">
-              <label class="field-label" for="coverUrl">Cover Image URL</label>
-              <input id="coverUrl" type="url" class="url-input" placeholder="https://…" oninput="previewCover(this.value)" />
-              <img id="coverPreview" class="cover-preview" alt="Cover preview" />
+              <label class="field-label">Cover Image</label>
+              <div class="cover-field-wrap">
+                <div class="cover-upload-row">
+                  <label class="btn-upload" for="coverFile">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                    Upload
+                  </label>
+                  <input id="coverFile" type="file" accept="image/*" style="display:none" onchange="handleFileUpload(this)" />
+                  <span class="cover-or">or</span>
+                  <input id="coverUrl" type="url" class="url-input" placeholder="Paste image URL…" oninput="setCoverFromUrl(this.value)" style="flex:1;min-width:0" />
+                </div>
+                <img id="coverPreview" class="cover-preview" alt="Cover preview" />
+                <button class="cover-clear" id="coverClear" onclick="clearCover()">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  Remove image
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -546,6 +582,7 @@
   const ADMIN_PASS = 'smile2024'; // ← change this password
   const KEY = 'dental_blog_posts';
   let editingId = null;
+  let currentCoverImage = '';
 
   const CATS = {
     'Tips & Tricks': { bg:'#CCFBF1', fg:'#0E7B73' },
@@ -668,8 +705,11 @@
     document.getElementById('titleInput').value = '';
     document.getElementById('contentArea').value = '';
     document.getElementById('catSelect').value = 'Tips & Tricks';
+    currentCoverImage = '';
     document.getElementById('coverUrl').value = '';
+    document.getElementById('coverFile').value = '';
     document.getElementById('coverPreview').style.display = 'none';
+    document.getElementById('coverClear').classList.remove('visible');
     document.getElementById('editorHeading').textContent = 'New Post';
     document.getElementById('wordCount').textContent = '0 words';
     document.getElementById('contentArea').style.height = '380px';
@@ -684,8 +724,9 @@
     document.getElementById('titleInput').value = p.title;
     document.getElementById('contentArea').value = p.content;
     document.getElementById('catSelect').value = p.category || 'Tips & Tricks';
-    document.getElementById('coverUrl').value = p.coverImage || '';
-    previewCover(p.coverImage || '');
+    currentCoverImage = p.coverImage || '';
+    document.getElementById('coverUrl').value = p.coverImage && !p.coverImage.startsWith('data:') ? p.coverImage : '';
+    showCoverPreview(p.coverImage || '');
     document.getElementById('editorHeading').textContent = 'Edit Post';
     updateWordCount();
     setTimeout(() => autoGrow(document.getElementById('contentArea')), 10);
@@ -697,7 +738,7 @@
     const title   = document.getElementById('titleInput').value.trim();
     const content = document.getElementById('contentArea').value.trim();
     const cat     = document.getElementById('catSelect').value;
-    const cover   = document.getElementById('coverUrl').value.trim();
+    const cover   = currentCoverImage;
 
     if (!title) { document.getElementById('titleInput').focus(); toast('Please add a title first.'); return; }
     if (!content) { document.getElementById('contentArea').focus(); toast('Please write some content.'); return; }
@@ -795,14 +836,41 @@
     autoGrow(ta); updateWordCount(); updatePreview();
   }
 
-  function previewCover(url) {
+  function showCoverPreview(src) {
     const img = document.getElementById('coverPreview');
-    if (url) {
-      img.src = url; img.style.display = 'block';
-      img.onerror = () => { img.style.display='none'; };
+    const btn = document.getElementById('coverClear');
+    if (src) {
+      img.src = src; img.style.display = 'block'; btn.classList.add('visible');
+      img.onerror = () => { img.style.display = 'none'; btn.classList.remove('visible'); };
     } else {
-      img.style.display = 'none';
+      img.style.display = 'none'; btn.classList.remove('visible');
     }
+  }
+
+  function setCoverFromUrl(url) {
+    const trimmed = url.trim();
+    currentCoverImage = trimmed;
+    showCoverPreview(trimmed);
+  }
+
+  function handleFileUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      currentCoverImage = e.target.result;
+      document.getElementById('coverUrl').value = '';
+      showCoverPreview(currentCoverImage);
+      toast('✓ Image uploaded.');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearCover() {
+    currentCoverImage = '';
+    document.getElementById('coverUrl').value = '';
+    document.getElementById('coverFile').value = '';
+    showCoverPreview('');
   }
 
   /* ── TOAST ─────────────────────────────────────── */
