@@ -440,14 +440,19 @@
   function cc(c) { return CATS[c] || { bg:'#CCFBF1', fg:'#0E7B73', accent:'#0E7B73', g:'linear-gradient(135deg,#0E7B73,#14B8A6)' }; }
   function load() { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
   function save(p) { localStorage.setItem(KEY, JSON.stringify(p)); }
-  function readTime(t) { return Math.max(1, Math.round(t.trim().split(/\s+/).length / 200)) + ' min read'; }
+  function stripTags(html) { const d = document.createElement('div'); d.innerHTML = html; return d.innerText || d.textContent || ''; }
+  function isHtml(c) { return /^\s*</.test(c); }
+  function readTime(t) { const txt = isHtml(t) ? stripTags(t) : t; return Math.max(1, Math.round(txt.trim().split(/\s+/).length / 200)) + ' min read'; }
   function fmtDate(s) { return new Date(s).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}); }
   function excerpt(c, n=145) {
-    const p = c.replace(/^[#]+\s+/gm,'').replace(/[*_]/g,'').replace(/\n+/g,' ').trim();
+    const plain = isHtml(c) ? stripTags(c) : c.replace(/^[#]+\s+/gm,'').replace(/[*_]/g,'').replace(/\n+/g,' ');
+    const p = plain.trim();
     return p.length > n ? p.slice(0,n) + '…' : p;
   }
-  function renderMd(raw) {
-    return raw
+  function renderContent(c) {
+    if (isHtml(c)) return c; // new posts: pass through HTML directly
+    // legacy markdown fallback
+    return c
       .replace(/\[video\]\(([^)]+)\)/g,'<video src="$1" controls class="md-video"></video>')
       .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" class="md-img">')
       .replace(/^### (.+)$/gm,'<h3>$1</h3>')
@@ -459,6 +464,7 @@
       .map(b => b.startsWith('<h') || b.startsWith('<hr') || b.includes('<img ') || b.includes('<video ') ? b : `<p>${b.replace(/\n/g,'<br>')}</p>`)
       .join('');
   }
+  function renderMd(raw) { return renderContent(raw); }
 
   /* ── featured card (magazine bleed) ── */
   function featuredCardHtml(p) {

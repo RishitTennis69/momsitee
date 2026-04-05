@@ -262,11 +262,21 @@
 
     .content-area {
       width: 100%; min-height: 380px; padding: 20px 24px;
-      border: none; outline: none; resize: none; overflow: hidden;
+      border: none; outline: none; overflow: auto;
       font-family: 'Lora', Georgia, serif; font-size: 16px; line-height: 1.75;
       color: var(--text-1); background: var(--surface); display: block;
     }
-    .content-area::placeholder { color: var(--text-3); }
+    .content-area:empty::before {
+      content: attr(data-placeholder); color: var(--text-3); pointer-events: none; display: block;
+    }
+    /* live formatting styles inside the editor */
+    .content-area p  { margin-bottom: 0.9em; }
+    .content-area h2 { font-family: var(--font); font-size: 20px; font-weight: 700; margin: 1.4em 0 .45em; color: var(--text-1); }
+    .content-area h3 { font-family: var(--font); font-size: 17px; font-weight: 600; margin: 1.2em 0 .35em; color: var(--text-1); }
+    .content-area strong { font-weight: 700; }
+    .content-area em { font-style: italic; }
+    .content-area hr { border: none; border-top: 2px solid var(--border); margin: 1.6em 0; }
+    .content-area img, .content-area video { max-width: 100%; border-radius: var(--r-sm); margin: .8em 0; display: block; outline: none; }
 
     #previewPane {
       display: none; padding: 20px 24px; min-height: 380px;
@@ -539,8 +549,9 @@
               <button class="btn-close-img" onclick="closeImgInsert()" title="Close" style="margin-left:auto">&#x2715;</button>
             </div>
           </div>
-          <textarea id="contentArea" class="content-area" placeholder="Start writing your post here…&#10;&#10;Use ## for headings, **bold**, *italic*, and --- for dividers."
-            oninput="autoGrow(this);updateWordCount();updatePreview()"></textarea>
+          <div id="contentArea" class="content-area" contenteditable="true"
+            data-placeholder="Start writing your post here…"
+            oninput="updateWordCount();updatePreview()"></div>
           <div id="previewPane"></div>
           <div class="editor-footer">
             <span class="word-count" id="wordCount">0 words</span>
@@ -671,6 +682,9 @@
     setTimeout(() => showView('dashboard'), 0);
   }
 
+  // Normalize Enter key to produce <p> elements in contenteditable across all browsers
+  document.execCommand('defaultParagraphSeparator', false, 'p');
+
   /* ── NAVIGATION ───────────────────────────────── */
   function showView(v) {
     ['dashboard','editor','posts'].forEach(id => {
@@ -745,7 +759,7 @@
   function newPost() {
     editingId = null;
     document.getElementById('titleInput').value = '';
-    document.getElementById('contentArea').value = '';
+    document.getElementById('contentArea').innerHTML = '';
     document.getElementById('catSelect').value = 'Tips & Tricks';
     currentCoverImage = '';
     document.getElementById('coverUrl').value = '';
@@ -754,7 +768,6 @@
     document.getElementById('coverClear').classList.remove('visible');
     document.getElementById('editorHeading').textContent = 'New Post';
     document.getElementById('wordCount').textContent = '0 words';
-    document.getElementById('contentArea').style.height = '380px';
     switchTab('write');
     showView('editor');
   }
@@ -764,26 +777,25 @@
     if (!p) return;
     editingId = id;
     document.getElementById('titleInput').value = p.title;
-    document.getElementById('contentArea').value = p.content;
+    document.getElementById('contentArea').innerHTML = p.content;
     document.getElementById('catSelect').value = p.category || 'Tips & Tricks';
     currentCoverImage = p.coverImage || '';
     document.getElementById('coverUrl').value = p.coverImage && !p.coverImage.startsWith('data:') ? p.coverImage : '';
     showCoverPreview(p.coverImage || '');
     document.getElementById('editorHeading').textContent = 'Edit Post';
     updateWordCount();
-    setTimeout(() => autoGrow(document.getElementById('contentArea')), 10);
     switchTab('write');
     showView('editor');
   }
 
   function savePost(status) {
     const title   = document.getElementById('titleInput').value.trim();
-    const content = document.getElementById('contentArea').value.trim();
+    const content = document.getElementById('contentArea').innerHTML.trim();
     const cat     = document.getElementById('catSelect').value;
     const cover   = currentCoverImage;
 
     if (!title) { document.getElementById('titleInput').focus(); toast('Please add a title first.'); return; }
-    if (!content) { document.getElementById('contentArea').focus(); toast('Please write some content.'); return; }
+    if (!document.getElementById('contentArea').innerText.trim()) { document.getElementById('contentArea').focus(); toast('Please write some content.'); return; }
 
     const posts = load();
     if (editingId) {
@@ -818,10 +830,10 @@
   }
 
   /* ── EDITOR HELPERS ───────────────────────────── */
-  function autoGrow(el) { el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
+  function autoGrow(el) { /* no-op: contenteditable expands naturally */ }
 
   function updateWordCount() {
-    const v = document.getElementById('contentArea').value.trim();
+    const v = document.getElementById('contentArea').innerText.trim();
     const n = v ? v.split(/\s+/).length : 0;
     document.getElementById('wordCount').textContent = n + (n===1?' word':' words');
   }
@@ -837,15 +849,15 @@
   }
 
   function updatePreview() {
-    const raw = document.getElementById('contentArea').value;
+    const el = document.getElementById('contentArea');
     const pane = document.getElementById('previewPane');
-    if (!raw.trim()) {
+    if (!el.innerText.trim()) {
       pane.className = 'empty-preview';
       pane.innerHTML = '<p>Nothing to preview yet.</p>';
       return;
     }
     pane.className = '';
-    pane.innerHTML = renderMd(raw);
+    pane.innerHTML = el.innerHTML;
   }
 
   function renderMd(raw) {
@@ -890,47 +902,27 @@
   }
 
   function doInsertVideo(src) {
-    const ta = document.getElementById('contentArea');
-    const s = ta.selectionStart;
-    const before = ta.value.slice(0, s), after = ta.value.slice(s);
-    const prefix = before && !before.endsWith('\n\n') ? '\n\n' : '';
-    const suffix = after && !after.startsWith('\n\n') ? '\n\n' : '';
-    const md = `${prefix}[video](${src})${suffix}`;
-    ta.value = before + md + after;
-    ta.selectionStart = ta.selectionEnd = s + md.length;
-    ta.focus();
-    autoGrow(ta); updateWordCount(); updatePreview();
+    document.getElementById('contentArea').focus();
+    document.execCommand('insertHTML', false, `<video src="${src}" controls class="md-video"></video><p><br></p>`);
+    updateWordCount(); updatePreview();
   }
 
   function doInsertImage(src) {
-    const ta = document.getElementById('contentArea');
-    const s = ta.selectionStart;
-    const before = ta.value.slice(0, s), after = ta.value.slice(s);
-    const prefix = before && !before.endsWith('\n\n') ? '\n\n' : '';
-    const suffix = after && !after.startsWith('\n\n') ? '\n\n' : '';
-    const md = `${prefix}![](${src})${suffix}`;
-    ta.value = before + md + after;
-    ta.selectionStart = ta.selectionEnd = s + md.length;
-    ta.focus();
-    autoGrow(ta); updateWordCount(); updatePreview();
+    document.getElementById('contentArea').focus();
+    document.execCommand('insertHTML', false, `<img src="${src}" class="md-img"><p><br></p>`);
+    updateWordCount(); updatePreview();
   }
 
   function fmt(type) {
-    const ta = document.getElementById('contentArea');
-    const s = ta.selectionStart, e = ta.selectionEnd;
-    const sel = ta.value.slice(s,e);
-    const before = ta.value.slice(0,s), after = ta.value.slice(e);
-    let ins;
+    document.getElementById('contentArea').focus();
     switch(type) {
-      case 'bold':   ins = `**${sel||'bold text'}**`; break;
-      case 'italic': ins = `*${sel||'italic text'}*`; break;
-      case 'h2':     ins = `\n## ${sel||'Heading'}\n`; break;
-      case 'h3':     ins = `\n### ${sel||'Subheading'}\n`; break;
-      case 'hr':     ins = `\n---\n`; break;
+      case 'bold':   document.execCommand('bold');                          break;
+      case 'italic': document.execCommand('italic');                        break;
+      case 'h2':     document.execCommand('formatBlock', false, 'h2');     break;
+      case 'h3':     document.execCommand('formatBlock', false, 'h3');     break;
+      case 'hr':     document.execCommand('insertHorizontalRule');          break;
     }
-    ta.value = before + ins + after;
-    ta.focus();
-    autoGrow(ta); updateWordCount(); updatePreview();
+    updateWordCount(); updatePreview();
   }
 
   function showCoverPreview(src) {
