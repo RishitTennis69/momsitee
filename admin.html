@@ -247,22 +247,7 @@
       transition: background .15s;
     }
     .img-insert-panel label.btn-upload-inline:hover { background: var(--primary-dark); }
-    .img-insert-or { font-size: 12px; color: var(--text-3); white-space: nowrap; flex-shrink: 0; }
-    .img-insert-url {
-      flex: 1; height: 34px; padding: 0 11px; min-width: 0;
-      border: 1.5px solid var(--border); border-radius: var(--r-sm);
-      font-family: var(--font); font-size: 13px; color: var(--text-1);
-      background: var(--surface); outline: none; transition: all .15s;
-    }
-    .img-insert-url:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-    .img-insert-url::placeholder { color: var(--text-3); }
-    .btn-insert-url {
-      height: 34px; padding: 0 14px; background: var(--surface);
-      border: 1.5px solid var(--border); border-radius: var(--r-sm);
-      font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--text-1);
-      cursor: pointer; transition: all .15s; white-space: nowrap;
-    }
-    .btn-insert-url:hover { border-color: var(--primary); color: var(--primary); }
+    .img-insert-hint { font-size: 12px; color: var(--text-3); }
     .btn-close-img {
       height: 34px; width: 34px; background: none; border: none;
       font-size: 18px; color: var(--text-3); cursor: pointer;
@@ -271,8 +256,9 @@
     }
     .btn-close-img:hover { background: var(--bg); color: var(--text-1); }
 
-    /* rendered images in preview & post body */
-    #previewPane img, .post-body img { max-width: 100%; border-radius: var(--r-sm); margin: 1em 0; display: block; }
+    /* rendered media in preview & post body */
+    #previewPane img, .post-body img, .md-img { max-width: 100%; border-radius: var(--r-sm); margin: 1em 0; display: block; }
+    #previewPane video, .post-body video, .md-video { max-width: 100%; border-radius: var(--r-sm); margin: 1em 0; display: block; outline: none; }
 
     .content-area {
       width: 100%; min-height: 380px; padding: 20px 24px;
@@ -546,13 +532,11 @@
             <div class="img-insert-row">
               <label class="btn-upload-inline" for="contentImgFile">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                Upload
+                Upload Image / Video
               </label>
-              <input id="contentImgFile" type="file" accept="image/*" style="display:none" onchange="handleContentImgFile(this)" />
-              <span class="img-insert-or">or paste URL</span>
-              <input id="imgInsertUrl" class="img-insert-url" type="url" placeholder="https://example.com/image.jpg" />
-              <button class="btn-insert-url" onclick="insertImageFromUrl()">Insert</button>
-              <button class="btn-close-img" onclick="closeImgInsert()" title="Close">&#x2715;</button>
+              <input id="contentImgFile" type="file" accept="image/*,video/*" style="display:none" onchange="handleContentImgFile(this)" />
+              <span class="img-insert-hint">Images &amp; videos are embedded directly in the post.</span>
+              <button class="btn-close-img" onclick="closeImgInsert()" title="Close" style="margin-left:auto">&#x2715;</button>
             </div>
           </div>
           <textarea id="contentArea" class="content-area" placeholder="Start writing your post here…&#10;&#10;Use ## for headings, **bold**, *italic*, and --- for dividers."
@@ -866,6 +850,7 @@
 
   function renderMd(raw) {
     return raw
+      .replace(/\[video\]\(([^)]+)\)/g,'<video src="$1" controls class="md-video"></video>')
       .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" class="md-img">')
       .replace(/^### (.+)$/gm,'<h3>$1</h3>')
       .replace(/^## (.+)$/gm,'<h2>$1</h2>')
@@ -873,7 +858,7 @@
       .replace(/\*(.+?)\*/g,'<em>$1</em>')
       .replace(/^---$/gm,'<hr>')
       .split(/\n\n+/)
-      .map(b=>b.startsWith('<h')||b.startsWith('<hr')||b.includes('<img ')?b:`<p>${b.replace(/\n/g,'<br>')}</p>`)
+      .map(b=>b.startsWith('<h')||b.startsWith('<hr')||b.includes('<img ')||b.includes('<video ')?b:`<p>${b.replace(/\n/g,'<br>')}</p>`)
       .join('');
   }
 
@@ -883,28 +868,38 @@
     if (panel.classList.contains('open')) { closeImgInsert(); return; }
     panel.classList.add('open');
     document.getElementById('imgInsertBtn').style.cssText = 'background:var(--primary-bg);border-color:var(--primary);color:var(--primary)';
-    setTimeout(() => document.getElementById('imgInsertUrl').focus(), 50);
   }
 
   function closeImgInsert() {
     document.getElementById('imgInsertPanel').classList.remove('open');
     document.getElementById('imgInsertBtn').style.cssText = '';
-    document.getElementById('imgInsertUrl').value = '';
     document.getElementById('contentImgFile').value = '';
   }
 
   function handleContentImgFile(input) {
     if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const isVideo = file.type.startsWith('video/');
     const reader = new FileReader();
-    reader.onload = e => { doInsertImage(e.target.result); closeImgInsert(); };
-    reader.readAsDataURL(input.files[0]);
+    reader.onload = e => {
+      if (isVideo) doInsertVideo(e.target.result);
+      else doInsertImage(e.target.result);
+      closeImgInsert();
+    };
+    reader.readAsDataURL(file);
   }
 
-  function insertImageFromUrl() {
-    const url = document.getElementById('imgInsertUrl').value.trim();
-    if (!url) { document.getElementById('imgInsertUrl').focus(); return; }
-    doInsertImage(url);
-    closeImgInsert();
+  function doInsertVideo(src) {
+    const ta = document.getElementById('contentArea');
+    const s = ta.selectionStart;
+    const before = ta.value.slice(0, s), after = ta.value.slice(s);
+    const prefix = before && !before.endsWith('\n\n') ? '\n\n' : '';
+    const suffix = after && !after.startsWith('\n\n') ? '\n\n' : '';
+    const md = `${prefix}[video](${src})${suffix}`;
+    ta.value = before + md + after;
+    ta.selectionStart = ta.selectionEnd = s + md.length;
+    ta.focus();
+    autoGrow(ta); updateWordCount(); updatePreview();
   }
 
   function doInsertImage(src) {
