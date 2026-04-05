@@ -233,6 +233,47 @@
     .tb-btn:hover { background: var(--bg); border-color: var(--border); color: var(--text-1); }
     .tb-sep { width: 1px; background: var(--border); margin: 4px 6px; }
 
+    /* inline image insert panel */
+    .img-insert-panel {
+      display: none; padding: 10px 16px; background: var(--primary-bg);
+      border-bottom: 1px solid var(--border); flex-direction: column; gap: 0;
+    }
+    .img-insert-panel.open { display: flex; }
+    .img-insert-row { display: flex; gap: 8px; align-items: center; }
+    .img-insert-panel label.btn-upload-inline {
+      height: 34px; padding: 0 14px; background: var(--primary); color: #fff;
+      border-radius: var(--r-sm); font-size: 13px; font-weight: 600; font-family: var(--font);
+      cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;
+      transition: background .15s;
+    }
+    .img-insert-panel label.btn-upload-inline:hover { background: var(--primary-dark); }
+    .img-insert-or { font-size: 12px; color: var(--text-3); white-space: nowrap; flex-shrink: 0; }
+    .img-insert-url {
+      flex: 1; height: 34px; padding: 0 11px; min-width: 0;
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      font-family: var(--font); font-size: 13px; color: var(--text-1);
+      background: var(--surface); outline: none; transition: all .15s;
+    }
+    .img-insert-url:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .img-insert-url::placeholder { color: var(--text-3); }
+    .btn-insert-url {
+      height: 34px; padding: 0 14px; background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      font-family: var(--font); font-size: 13px; font-weight: 600; color: var(--text-1);
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .btn-insert-url:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-close-img {
+      height: 34px; width: 34px; background: none; border: none;
+      font-size: 18px; color: var(--text-3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--r-sm); transition: all .15s; flex-shrink: 0;
+    }
+    .btn-close-img:hover { background: var(--bg); color: var(--text-1); }
+
+    /* rendered images in preview & post body */
+    #previewPane img, .post-body img { max-width: 100%; border-radius: var(--r-sm); margin: 1em 0; display: block; }
+
     .content-area {
       width: 100%; min-height: 380px; padding: 20px 24px;
       border: none; outline: none; resize: none; overflow: hidden;
@@ -496,6 +537,23 @@
             <button class="tb-btn" style="font-size:11px;font-weight:700" onclick="fmt('h3')" title="Subheading">H3</button>
             <div class="tb-sep"></div>
             <button class="tb-btn" onclick="fmt('hr')" title="Divider" style="font-size:16px;color:var(--text-3)">—</button>
+            <div class="tb-sep"></div>
+            <button class="tb-btn" id="imgInsertBtn" onclick="openImgInsert()" title="Insert Image">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </button>
+          </div>
+          <div class="img-insert-panel" id="imgInsertPanel">
+            <div class="img-insert-row">
+              <label class="btn-upload-inline" for="contentImgFile">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                Upload
+              </label>
+              <input id="contentImgFile" type="file" accept="image/*" style="display:none" onchange="handleContentImgFile(this)" />
+              <span class="img-insert-or">or paste URL</span>
+              <input id="imgInsertUrl" class="img-insert-url" type="url" placeholder="https://example.com/image.jpg" />
+              <button class="btn-insert-url" onclick="insertImageFromUrl()">Insert</button>
+              <button class="btn-close-img" onclick="closeImgInsert()" title="Close">&#x2715;</button>
+            </div>
           </div>
           <textarea id="contentArea" class="content-area" placeholder="Start writing your post here…&#10;&#10;Use ## for headings, **bold**, *italic*, and --- for dividers."
             oninput="autoGrow(this);updateWordCount();updatePreview()"></textarea>
@@ -808,14 +866,58 @@
 
   function renderMd(raw) {
     return raw
+      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" class="md-img">')
       .replace(/^### (.+)$/gm,'<h3>$1</h3>')
       .replace(/^## (.+)$/gm,'<h2>$1</h2>')
       .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
       .replace(/\*(.+?)\*/g,'<em>$1</em>')
       .replace(/^---$/gm,'<hr>')
       .split(/\n\n+/)
-      .map(b=>b.startsWith('<h')||b.startsWith('<hr')?b:`<p>${b.replace(/\n/g,'<br>')}</p>`)
+      .map(b=>b.startsWith('<h')||b.startsWith('<hr')||b.includes('<img ')?b:`<p>${b.replace(/\n/g,'<br>')}</p>`)
       .join('');
+  }
+
+  /* ── INLINE IMAGE INSERT ──────────────────────── */
+  function openImgInsert() {
+    const panel = document.getElementById('imgInsertPanel');
+    if (panel.classList.contains('open')) { closeImgInsert(); return; }
+    panel.classList.add('open');
+    document.getElementById('imgInsertBtn').style.cssText = 'background:var(--primary-bg);border-color:var(--primary);color:var(--primary)';
+    setTimeout(() => document.getElementById('imgInsertUrl').focus(), 50);
+  }
+
+  function closeImgInsert() {
+    document.getElementById('imgInsertPanel').classList.remove('open');
+    document.getElementById('imgInsertBtn').style.cssText = '';
+    document.getElementById('imgInsertUrl').value = '';
+    document.getElementById('contentImgFile').value = '';
+  }
+
+  function handleContentImgFile(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = e => { doInsertImage(e.target.result); closeImgInsert(); };
+    reader.readAsDataURL(input.files[0]);
+  }
+
+  function insertImageFromUrl() {
+    const url = document.getElementById('imgInsertUrl').value.trim();
+    if (!url) { document.getElementById('imgInsertUrl').focus(); return; }
+    doInsertImage(url);
+    closeImgInsert();
+  }
+
+  function doInsertImage(src) {
+    const ta = document.getElementById('contentArea');
+    const s = ta.selectionStart;
+    const before = ta.value.slice(0, s), after = ta.value.slice(s);
+    const prefix = before && !before.endsWith('\n\n') ? '\n\n' : '';
+    const suffix = after && !after.startsWith('\n\n') ? '\n\n' : '';
+    const md = `${prefix}![](${src})${suffix}`;
+    ta.value = before + md + after;
+    ta.selectionStart = ta.selectionEnd = s + md.length;
+    ta.focus();
+    autoGrow(ta); updateWordCount(); updatePreview();
   }
 
   function fmt(type) {

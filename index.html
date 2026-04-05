@@ -328,6 +328,7 @@
     .post-body strong { font-weight: 700; }
     .post-body em { font-style: italic; }
     .post-body hr { border: none; border-top: 2px solid var(--border); margin: 2.4em 0; }
+    .post-body img, .md-img { max-width: 100%; border-radius: var(--r); margin: 1.5em 0; display: block; }
 
     /* ── FOOTER ────────────────────────────────────── */
     footer { border-top: 1px solid var(--border); padding: 32px 24px; }
@@ -446,13 +447,14 @@
   }
   function renderMd(raw) {
     return raw
+      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" class="md-img">')
       .replace(/^### (.+)$/gm,'<h3>$1</h3>')
       .replace(/^## (.+)$/gm,'<h2>$1</h2>')
       .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
       .replace(/\*(.+?)\*/g,'<em>$1</em>')
       .replace(/^---$/gm,'<hr>')
       .split(/\n\n+/)
-      .map(b => b.startsWith('<h') || b.startsWith('<hr') ? b : `<p>${b.replace(/\n/g,'<br>')}</p>`)
+      .map(b => b.startsWith('<h') || b.startsWith('<hr') || b.includes('<img ') ? b : `<p>${b.replace(/\n/g,'<br>')}</p>`)
       .join('');
   }
 
