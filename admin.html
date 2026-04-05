@@ -544,7 +544,7 @@
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
                 Upload Image / Video
               </label>
-              <input id="contentImgFile" type="file" accept="image/*,video/*" style="display:none" onchange="handleContentImgFile(this)" />
+              <input id="contentImgFile" type="file" accept="image/*,video/*" multiple style="display:none" onchange="handleContentImgFile(this)" />
               <span class="img-insert-hint">Images &amp; videos are embedded directly in the post.</span>
               <button class="btn-close-img" onclick="closeImgInsert()" title="Close" style="margin-left:auto">&#x2715;</button>
             </div>
@@ -889,16 +889,21 @@
   }
 
   function handleContentImgFile(input) {
-    if (!input.files || !input.files[0]) return;
-    const file = input.files[0];
-    const isVideo = file.type.startsWith('video/');
-    const reader = new FileReader();
-    reader.onload = e => {
-      if (isVideo) doInsertVideo(e.target.result);
-      else doInsertImage(e.target.result);
-      closeImgInsert();
-    };
-    reader.readAsDataURL(file);
+    if (!input.files || !input.files.length) return;
+    const files = Array.from(input.files);
+    let i = 0;
+    function readNext() {
+      if (i >= files.length) { closeImgInsert(); return; }
+      const file = files[i++];
+      const reader = new FileReader();
+      reader.onload = e => {
+        if (file.type.startsWith('video/')) doInsertVideo(e.target.result);
+        else doInsertImage(e.target.result);
+        readNext();
+      };
+      reader.readAsDataURL(file);
+    }
+    readNext();
   }
 
   function doInsertVideo(src) {
