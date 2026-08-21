@@ -6,7 +6,7 @@
   <title>Admin · The Smile Journal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -28,12 +28,12 @@
       --border-soft:   #F0EDE8;
       --text-1:        #1C1917;
       --text-2:        #57534E;
-      --text-3:        #A8A29E;
+      --text-3:        #65716D;
       --r:    12px;
       --r-sm:  7px;
       --r-lg: 18px;
       --shadow: 0 1px 4px rgba(0,0,0,.05), 0 2px 8px rgba(0,0,0,.05);
-      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font: 'Onest', 'Segoe UI', sans-serif;
     }
 
     html, body { height: 100%; }
@@ -48,7 +48,7 @@
     .lock-card {
       background: var(--surface); border-radius: var(--r-lg);
       padding: 48px 44px; width: 100%; max-width: 420px;
-      box-shadow: 0 4px 24px rgba(14,123,115,.12), 0 1px 4px rgba(0,0,0,.06);
+      box-shadow: 0 4px 24px rgba(32,48,45,.10), 0 1px 4px rgba(0,0,0,.06);
       border: 1px solid var(--border-soft);
       animation: fadeUp .35s ease;
     }
@@ -57,7 +57,7 @@
       width: 52px; height: 52px; background: var(--primary); border-radius: 14px;
       display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
     }
-    .lock-icon svg { width: 26px; height: 26px; fill: #fff; }
+    .lock-icon svg { width: 26px; height: 26px; fill: none; stroke: #fff; }
     .lock-card h1 { font-size: 22px; font-weight: 700; letter-spacing: -.3px; margin-bottom: 6px; }
     .lock-card p { font-size: 14px; color: var(--text-2); margin-bottom: 32px; line-height: 1.55; }
     .field-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; letter-spacing: .2px; }
@@ -100,7 +100,7 @@
       width: 32px; height: 32px; background: var(--primary); border-radius: 9px;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .admin-logo-mark svg { width: 17px; height: 17px; fill: #fff; }
+    .admin-logo-mark svg { width: 17px; height: 17px; fill: none; stroke: #fff; }
     .admin-brand-text { font-size: 14px; font-weight: 700; color: var(--text-1); }
     .admin-brand-text span { color: var(--text-3); font-weight: 400; }
 
@@ -181,7 +181,7 @@
     .row-date { font-size: 12.5px; color: var(--text-2); }
     .badge {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 100px;
+      padding: 0; border-radius: 0;
       font-size: 11.5px; font-weight: 600;
     }
     .badge-pub  { background: var(--success-bg); color: var(--success); }
@@ -348,7 +348,7 @@
     .save-toast {
       position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
       background: #1C1917; color: #fff; font-size: 13.5px; font-weight: 500;
-      padding: 10px 20px; border-radius: 100px;
+      padding: 10px 20px; border-radius: 5px;
       opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; z-index: 999;
     }
     .save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -401,15 +401,24 @@
       .admin-main { padding: 24px 16px 60px; }
     }
   </style>
+  <link rel="stylesheet" href="admin-redesign.css" />
 </head>
 <body>
+<!--
+THESIS: A focused publishing desk, not a KPI-card dashboard or top-nav component demo.
+OWN-WORLD: Warm white surfaces, graphite text, deep clinical teal, fine rules, and the same humanist sans as the journal.
+STORY: The editor sees publishing health, moves directly to writing, and manages posts through one aligned control rail.
+FIRST VIEWPORT: A quiet sidebar spine frames a dense editorial workspace with counts expressed as one ruled summary.
+FORM: Clinical field notes for operate mode, grounded direction 6, seed 6a2404ce.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
 
 <!-- LOCK SCREEN -->
 <!-- Default password: smile2024  ← change ADMIN_PASS in the script below -->
 <div id="lock">
   <div class="lock-card">
     <div class="lock-icon">
-      <svg viewBox="0 0 24 24"><path d="M12 2C8.5 2 6 4.2 6 7.2c0 1.7.55 3.3 1.6 5l1.7 6.3c.45 1.7 1.4 2.5 2.7 2.5s2.25-.8 2.7-2.5l1.7-6.3C17.45 10.5 18 8.9 18 7.2 18 4.2 15.5 2 12 2z"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 3.4c1.25-.45 2.45.45 3.8.45s2.55-.9 3.8-.45c2.2.78 3.15 3.2 2.38 5.48l-2.35 7.42c-.5 1.58-1.15 3.2-2.35 3.2-1.48 0-.92-4.25-1.48-4.25s0 4.25-1.48 4.25c-1.2 0-1.85-1.62-2.35-3.2L5.82 8.88C5.05 6.6 6 4.18 8.2 3.4Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 7.05c.75-.55 1.55-.58 2.25-.2" stroke-width="1.5" stroke-linecap="round"/></svg>
     </div>
     <h1>Admin Portal</h1>
     <p>Enter your password to access The Smile Journal admin panel.</p>
@@ -433,7 +442,7 @@
     <div class="admin-nav-inner">
       <a class="admin-brand" href="index.html">
         <div class="admin-logo-mark">
-          <svg viewBox="0 0 24 24"><path d="M12 2C8.5 2 6 4.2 6 7.2c0 1.7.55 3.3 1.6 5l1.7 6.3c.45 1.7 1.4 2.5 2.7 2.5s2.25-.8 2.7-2.5l1.7-6.3C17.45 10.5 18 8.9 18 7.2 18 4.2 15.5 2 12 2z"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 3.4c1.25-.45 2.45.45 3.8.45s2.55-.9 3.8-.45c2.2.78 3.15 3.2 2.38 5.48l-2.35 7.42c-.5 1.58-1.15 3.2-2.35 3.2-1.48 0-.92-4.25-1.48-4.25s0 4.25-1.48 4.25c-1.2 0-1.85-1.62-2.35-3.2L5.82 8.88C5.05 6.6 6 4.18 8.2 3.4Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 7.05c.75-.55 1.55-.58 2.25-.2" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
         <span class="admin-brand-text">The Smile Journal <span>/ Admin</span></span>
       </a>
@@ -472,7 +481,7 @@
     <!-- DASHBOARD -->
     <div id="view-dashboard">
       <div class="dash-header">
-        <h2 id="dashGreeting">Good morning 👋</h2>
+        <h2 id="dashGreeting">Good morning</h2>
         <p>Here's what's happening with your blog.</p>
       </div>
       <div class="stats-grid">
@@ -611,10 +620,21 @@
     <div id="view-posts">
       <div class="posts-view-header">
         <h2>All Posts</h2>
-        <button class="btn-new-post" onclick="newPost()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-          New Post
-        </button>
+        <div class="posts-tools">
+          <div class="admin-search-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="adminSearch" class="admin-search" type="search" aria-label="Search all posts" placeholder="Search posts" oninput="renderAllPosts()" />
+          </div>
+          <select id="adminSort" class="admin-sort" aria-label="Sort posts" onchange="renderAllPosts()">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title">Title A–Z</option>
+          </select>
+          <button class="btn-new-post" onclick="newPost()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            New Post
+          </button>
+        </div>
       </div>
       <div class="posts-table">
         <div class="table-head">
@@ -638,13 +658,13 @@
   let currentCoverImage = '';
 
   const CATS = {
-    'Tips & Tricks': { bg:'#CCFBF1', fg:'#0E7B73' },
-    'Oral Health':   { bg:'#D1FAE5', fg:'#059669' },
-    'For Parents':   { bg:'#FEF3C7', fg:'#B45309' },
-    'Kids & Teens':  { bg:'#EDE9FE', fg:'#7C3AED' },
-    'Office News':   { bg:'#E0F2FE', fg:'#0369A1' },
+    'Tips & Tricks': { bg:'#E8F3F0', fg:'#0F7168' },
+    'Oral Health':   { bg:'#E1EEEA', fg:'#174A45' },
+    'For Parents':   { bg:'#F3EEE4', fg:'#79633E' },
+    'Kids & Teens':  { bg:'#EDF1F0', fg:'#49625D' },
+    'Office News':   { bg:'#E9F0EF', fg:'#3E625D' },
   };
-  function cc(c) { return CATS[c] || { bg:'#E7E5E0', fg:'#57534E' }; }
+  function cc(c) { return CATS[c] || { bg:'#EDF1F0', fg:'#53615E' }; }
 
   /* ── STORAGE ─────────────────────────────────── */
   function load() { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
@@ -697,7 +717,7 @@
     if (map[v]) document.getElementById(map[v]).classList.add('active');
     if (v==='dashboard') renderDashboard();
     if (v==='posts') renderAllPosts();
-    window.scrollTo({top:0,behavior:'smooth'});
+    window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   }
 
   /* ── DASHBOARD ─────────────────────────────────── */
@@ -710,7 +730,7 @@
     document.getElementById('stat-draft').textContent = draft;
     const hr = new Date().getHours();
     document.getElementById('dashGreeting').textContent =
-      (hr<12 ? 'Good morning 🌤️' : hr<17 ? 'Good afternoon ☀️' : 'Good evening 🌙');
+      (hr<12 ? 'Good morning' : hr<17 ? 'Good afternoon' : 'Good evening');
     renderPostsTable('dash-posts-body', [...posts].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6));
   }
 
@@ -718,7 +738,10 @@
   function renderPostsTable(targetId, posts) {
     const el = document.getElementById(targetId);
     if (!posts.length) {
-      el.innerHTML = '<div class="empty-table">No posts yet. <button onclick="newPost()" style="color:var(--primary);background:none;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600">Write your first post →</button></div>';
+      const filtering = targetId === 'all-posts-body' && document.getElementById('adminSearch')?.value.trim();
+      el.innerHTML = filtering
+        ? '<div class="empty-table">No posts match that search. Try a title or category.</div>'
+        : '<div class="empty-table">No posts yet. <button onclick="newPost()" style="color:var(--primary);background:none;border:none;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600">Write your first post →</button></div>';
       return;
     }
     const c = cc;
@@ -751,7 +774,16 @@
   }
 
   function renderAllPosts() {
-    const posts = [...load()].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    const searchEl = document.getElementById('adminSearch');
+    const sortEl = document.getElementById('adminSort');
+    const query = (searchEl?.value || '').trim().toLowerCase();
+    const sort = sortEl?.value || 'newest';
+    let posts = load().filter(p => !query || p.title.toLowerCase().includes(query) || (p.category||'').toLowerCase().includes(query));
+    posts.sort((a,b) => {
+      if (sort === 'oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sort === 'title') return a.title.localeCompare(b.title);
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
     renderPostsTable('all-posts-body', posts);
   }
 

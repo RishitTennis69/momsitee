@@ -6,7 +6,7 @@
   <title>The Smile Journal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -23,14 +23,14 @@
       --border-soft:   #F0EDE8;
       --text-1:        #1C1917;
       --text-2:        #57534E;
-      --text-3:        #A8A29E;
+      --text-3:        #65716D;
       --r:    14px;
       --r-sm:  8px;
       --r-lg: 22px;
       --shadow:       0 1px 3px rgba(0,0,0,.05), 0 4px 12px rgba(14,123,115,.08);
       --shadow-hover:  0 10px 32px rgba(14,123,115,.18), 0 4px 8px rgba(0,0,0,.06);
-      --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
-      --font-serif: 'Lora', Georgia, serif;
+      --font-sans: 'Onest', 'Segoe UI', sans-serif;
+      --font-serif: 'Onest', 'Segoe UI', sans-serif;
     }
 
     html { scroll-behavior: smooth; }
@@ -60,7 +60,7 @@
       width: 36px; height: 36px; background: var(--primary); border-radius: 10px;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .logo-mark svg { width: 20px; height: 20px; fill: #fff; }
+    .logo-mark svg { width: 20px; height: 20px; fill: none; stroke: #fff; }
     .logo-text { font-size: 16px; font-weight: 700; letter-spacing: -.3px; color: var(--text-1); }
     .logo-text span { color: var(--primary); }
 
@@ -68,7 +68,7 @@
     .search-wrap { position: relative; display: flex; align-items: center; }
     .search-input {
       height: 38px; padding: 0 14px 0 38px;
-      border: 1.5px solid var(--border); border-radius: 100px;
+      border: 1.5px solid var(--border); border-radius: 4px;
       background: var(--bg); font-family: var(--font-sans); font-size: 13.5px;
       color: var(--text-1); outline: none; width: 200px; transition: all .22s;
     }
@@ -80,7 +80,7 @@
     .search-icon { position: absolute; left: 12px; color: var(--text-3); pointer-events: none; }
     .nav-pill {
       font-size: 13px; font-weight: 500; color: var(--text-2); text-decoration: none;
-      padding: 7px 16px; border: 1.5px solid var(--border); border-radius: 100px;
+      padding: 7px 16px; border: 1.5px solid var(--border); border-radius: 0;
       transition: all .18s; white-space: nowrap;
     }
     .nav-pill:hover { color: var(--primary); border-color: var(--primary); background: var(--primary-bg); }
@@ -90,21 +90,15 @@
       background: linear-gradient(160deg, var(--primary-bg) 0%, var(--bg) 65%);
       padding: 88px 24px 80px; position: relative; overflow: hidden;
     }
-    /* dot grid pattern */
     .hero::before {
       content: '';
       position: absolute; inset: 0;
-      background-image: radial-gradient(circle, rgba(14,123,115,.15) 1px, transparent 1px);
-      background-size: 28px 28px;
       pointer-events: none;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
     }
     .hero::after {
       content: '';
       position: absolute; bottom: -60px; right: -60px;
       width: 340px; height: 340px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(245,158,11,.1) 0%, transparent 70%);
       pointer-events: none;
     }
     .hero-inner { max-width: 640px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
@@ -113,7 +107,7 @@
       background: rgba(255,255,255,.85); border: 1px solid var(--primary-light);
       color: var(--primary-dark); backdrop-filter: blur(8px);
       font-size: 11.5px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase;
-      padding: 6px 16px; border-radius: 100px; margin-bottom: 24px;
+      padding: 6px 16px; border-radius: 0; margin-bottom: 24px;
     }
     .hero h1 {
       font-size: clamp(36px, 5.5vw, 56px); font-weight: 700; line-height: 1.1;
@@ -136,7 +130,7 @@
     .cat-tabs::-webkit-scrollbar { display: none; }
     .cat-tab {
       flex-shrink: 0; padding: 8px 20px;
-      border: 1.5px solid var(--border); border-radius: 100px;
+      border: 1.5px solid var(--border); border-radius: 0;
       background: var(--surface); font-family: var(--font-sans);
       font-size: 13.5px; font-weight: 500; color: var(--text-2);
       cursor: pointer; transition: all .18s; white-space: nowrap;
@@ -182,7 +176,7 @@
       display: inline-flex; align-items: center; gap: 5px;
       font-size: 11px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase;
       color: var(--accent); background: rgba(255,255,255,.12);
-      border: 1px solid rgba(245,158,11,.35); border-radius: 100px;
+      border: 1px solid rgba(245,158,11,.35); border-radius: 0;
       padding: 4px 12px; margin-bottom: 14px; width: fit-content;
     }
     .feat-meta { font-size: 12.5px; color: rgba(255,255,255,.6); margin-bottom: 12px; }
@@ -200,7 +194,7 @@
       display: inline-flex; align-items: center; gap: 8px;
       font-size: 13.5px; font-weight: 700; color: #fff;
       background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.3);
-      backdrop-filter: blur(8px); padding: 9px 20px; border-radius: 100px;
+      backdrop-filter: blur(8px); padding: 9px 20px; border-radius: 0;
       transition: all .2s; width: fit-content;
     }
     .feat-cta svg { transition: transform .18s; }
@@ -239,7 +233,7 @@
     }
     .cat-chip {
       position: absolute; bottom: 12px; left: 14px; z-index: 1;
-      padding: 4px 11px; border-radius: 100px;
+      padding: 4px 11px; border-radius: 4px;
       font-size: 11px; font-weight: 700; letter-spacing: .3px;
       color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.3);
     }
@@ -295,7 +289,7 @@
       display: inline-flex; align-items: center; gap: 7px;
       font-family: var(--font-sans); font-size: 13.5px; font-weight: 600;
       color: var(--text-2); background: var(--surface); border: 1.5px solid var(--border);
-      border-radius: 100px; cursor: pointer; padding: 8px 18px; margin-bottom: 36px;
+      border-radius: 0; cursor: pointer; padding: 8px 18px; margin-bottom: 36px;
       transition: all .18s;
     }
     .back-btn:hover { color: var(--primary); border-color: var(--primary); background: var(--primary-bg); }
@@ -306,7 +300,7 @@
     .post-cover-img { width: 100%; height: 420px; object-fit: cover; display: block; }
     .post-cover-grad { width: 100%; height: 300px; display: block; }
     .post-cat-pill {
-      display: inline-block; padding: 5px 16px; border-radius: 100px;
+      display: inline-block; padding: 5px 16px; border-radius: 0;
       font-size: 12px; font-weight: 700; letter-spacing: .4px;
       text-transform: uppercase; margin-bottom: 16px;
     }
@@ -353,23 +347,28 @@
       .feat-content { max-width: 100%; padding: 24px 24px; }
     }
   </style>
+  <link rel="stylesheet" href="site-redesign.css" />
 </head>
 <body>
+<!--
+THESIS: A useful pediatric field journal, not a stock-photo blog or stacked-card template.
+OWN-WORLD: Warm white paper, graphite copy, deep clinical teal, fine rules, and one unified humanist sans.
+STORY: Parents understand the journal, search or choose a topic, and reach practical guidance without visual detours.
+FIRST VIEWPORT: A compact left-led headline and annotated deck meet a single discovery rail; the newest article begins immediately below.
+FORM: Clinical field notes, grounded direction 6, seed 6a2404ce; its signature is the asymmetrical reading index.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
 
 <!-- NAV -->
 <nav id="mainNav">
   <div class="nav-inner">
-    <div class="nav-logo" onclick="showBlog()">
+    <button class="nav-logo" type="button" aria-label="Return to The Smile Journal home" onclick="showBlog()">
       <div class="logo-mark">
-        <svg viewBox="0 0 24 24"><path d="M12 2C8.5 2 6 4.2 6 7.2c0 1.7.55 3.3 1.6 5l1.7 6.3c.45 1.7 1.4 2.5 2.7 2.5s2.25-.8 2.7-2.5l1.7-6.3C17.45 10.5 18 8.9 18 7.2 18 4.2 15.5 2 12 2z"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 3.4c1.25-.45 2.45.45 3.8.45s2.55-.9 3.8-.45c2.2.78 3.15 3.2 2.38 5.48l-2.35 7.42c-.5 1.58-1.15 3.2-2.35 3.2-1.48 0-.92-4.25-1.48-4.25s0 4.25-1.48 4.25c-1.2 0-1.85-1.62-2.35-3.2L5.82 8.88C5.05 6.6 6 4.18 8.2 3.4Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 7.05c.75-.55 1.55-.58 2.25-.2" stroke-width="1.5" stroke-linecap="round"/></svg>
       </div>
       <span class="logo-text">The Smile <span>Journal</span></span>
-    </div>
+    </button>
     <div class="nav-right">
-      <div class="search-wrap">
-        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input id="searchInput" type="search" class="search-input" placeholder="Search posts…" oninput="handleSearch(this.value)" />
-      </div>
       <a href="admin.html" class="nav-pill">Admin →</a>
     </div>
   </div>
@@ -379,23 +378,27 @@
 <div id="blog-view">
   <section class="hero">
     <div class="hero-inner">
-      <div class="hero-badge">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.5 2 6 4.2 6 7.2c0 1.7.55 3.3 1.6 5l1.7 6.3c.45 1.7 1.4 2.5 2.7 2.5s2.25-.8 2.7-2.5l1.7-6.3C17.45 10.5 18 8.9 18 7.2 18 4.2 15.5 2 12 2z"/></svg>
-        Pediatric Dental Insights
+      <div class="hero-copy">
+        <h1>Healthy smiles<br>start <em>early.</em></h1>
       </div>
-      <h1>Healthy Smiles<br>Start <em>Early</em></h1>
       <p class="hero-sub">Friendly tips, honest advice, and stories from the dental chair — for parents and little ones alike.</p>
     </div>
   </section>
 
   <div class="blog-section">
-    <div class="cat-tabs" id="catTabs">
-      <button class="cat-tab active" onclick="filterCat('all',this)">All Posts</button>
-      <button class="cat-tab" onclick="filterCat('Tips &amp; Tricks',this)">Tips &amp; Tricks</button>
-      <button class="cat-tab" onclick="filterCat('Oral Health',this)">Oral Health</button>
-      <button class="cat-tab" onclick="filterCat('For Parents',this)">For Parents</button>
-      <button class="cat-tab" onclick="filterCat('Kids &amp; Teens',this)">Kids &amp; Teens</button>
-      <button class="cat-tab" onclick="filterCat('Office News',this)">Office News</button>
+    <div class="journal-controls">
+      <div class="search-wrap">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="searchInput" type="search" class="search-input" aria-label="Search journal posts" placeholder="Search the journal" oninput="handleSearch(this.value)" />
+      </div>
+      <div class="cat-tabs" id="catTabs" aria-label="Filter posts by topic">
+        <button class="cat-tab active" onclick="filterCat('all',this)">All posts</button>
+        <button class="cat-tab" onclick="filterCat('Tips &amp; Tricks',this)">Tips &amp; tricks</button>
+        <button class="cat-tab" onclick="filterCat('Oral Health',this)">Oral health</button>
+        <button class="cat-tab" onclick="filterCat('For Parents',this)">For parents</button>
+        <button class="cat-tab" onclick="filterCat('Kids &amp; Teens',this)">Kids &amp; teens</button>
+        <button class="cat-tab" onclick="filterCat('Office News',this)">Office news</button>
+      </div>
     </div>
     <div class="posts-grid" id="postsGrid"></div>
   </div>
@@ -424,20 +427,20 @@
 
   /* cover images for the 4 built-in sample posts */
   const SAMPLE_IMAGES = {
-    s1: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&h=500&fit=crop&auto=format&q=80',
+    s1: 'assets/baby-teeth-featured.png',
     s2: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=900&h=500&fit=crop&auto=format&q=80',
     s3: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=900&h=500&fit=crop&auto=format&q=80',
     s4: 'https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=900&h=500&fit=crop&auto=format&q=80',
   };
 
   const CATS = {
-    'Tips & Tricks': { bg:'#CCFBF1', fg:'#0E7B73', accent:'#0E7B73', g:'linear-gradient(135deg,#0E7B73,#059669)' },
-    'Oral Health':   { bg:'#D1FAE5', fg:'#059669', accent:'#059669', g:'linear-gradient(135deg,#059669,#047857)' },
-    'For Parents':   { bg:'#FEF3C7', fg:'#B45309', accent:'#D97706', g:'linear-gradient(135deg,#D97706,#B45309)' },
-    'Kids & Teens':  { bg:'#EDE9FE', fg:'#7C3AED', accent:'#7C3AED', g:'linear-gradient(135deg,#7C3AED,#6D28D9)' },
-    'Office News':   { bg:'#E0F2FE', fg:'#0369A1', accent:'#0284C7', g:'linear-gradient(135deg,#0284C7,#0369A1)' },
+    'Tips & Tricks': { bg:'#E8F3F0', fg:'#0F7168', accent:'#0F7168', g:'#174A45' },
+    'Oral Health':   { bg:'#E1EEEA', fg:'#174A45', accent:'#174A45', g:'#174A45' },
+    'For Parents':   { bg:'#F3EEE4', fg:'#79633E', accent:'#79633E', g:'#174A45' },
+    'Kids & Teens':  { bg:'#EDF1F0', fg:'#49625D', accent:'#49625D', g:'#174A45' },
+    'Office News':   { bg:'#E9F0EF', fg:'#3E625D', accent:'#3E625D', g:'#174A45' },
   };
-  function cc(c) { return CATS[c] || { bg:'#CCFBF1', fg:'#0E7B73', accent:'#0E7B73', g:'linear-gradient(135deg,#0E7B73,#14B8A6)' }; }
+  function cc(c) { return CATS[c] || { bg:'#E8F3F0', fg:'#0F7168', accent:'#0F7168', g:'#174A45' }; }
   function load() { return JSON.parse(localStorage.getItem(KEY) || '[]'); }
   function save(p) { localStorage.setItem(KEY, JSON.stringify(p)); }
   function stripTags(html) { const d = document.createElement('div'); d.innerHTML = html; return d.innerText || d.textContent || ''; }
@@ -468,57 +471,41 @@
 
   /* ── featured card (magazine bleed) ── */
   function featuredCardHtml(p) {
-    const c = cc(p.category);
-    const mediaHtml = p.coverImage
-      ? `<img class="feat-bg-img" src="${p.coverImage}" alt="${p.title}"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-         <div class="feat-bg-grad" style="background:${c.g};display:none"></div>`
-      : `<div class="feat-bg-grad" style="background:${c.g}"></div>`;
-    return `<div class="post-card-featured" onclick="openPost('${p.id}')">
-      ${mediaHtml}
-      <div class="feat-overlay"></div>
+    const featuredImage = p.id === 's1' ? SAMPLE_IMAGES.s1 : p.coverImage;
+    return `<article class="post-card-featured" role="button" tabindex="0" onclick="openPost('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openPost('${p.id}')} ">
+      ${featuredImage ? `<img class="feat-bg-img" src="${featuredImage}" alt="" aria-hidden="true" onerror="this.remove()">` : ''}
+      <div class="feat-overlay" aria-hidden="true"></div>
       <div class="feat-content">
-        <div class="feat-label">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor" style="opacity:.9">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/>
-          </svg>
-          Featured
+        <div class="feat-topline">
+          <div class="feat-label">Featured reading · ${p.category||'General'}</div>
+          <div class="feat-meta">${fmtDate(p.createdAt)} · ${readTime(p.content)}</div>
         </div>
-        <div class="feat-meta">${fmtDate(p.createdAt)} &nbsp;·&nbsp; ${readTime(p.content)}</div>
-        <div class="feat-title">${p.title}</div>
-        <div class="feat-excerpt">${excerpt(p.content, 200)}</div>
-        <div class="feat-cta">
-          Read article
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <div class="feat-main">
+          <h2 class="feat-title">${p.title}</h2>
+          <p class="feat-excerpt">${excerpt(p.content, 220)}</p>
+          <div class="feat-cta">
+            Read article
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
         </div>
       </div>
-    </div>`;
+    </article>`;
   }
 
   /* ── regular card ── */
   function cardHtml(p) {
-    const c = cc(p.category);
-    const media = p.coverImage
-      ? `<div class="img-skeleton"></div>
-         <img src="${p.coverImage}" alt="${p.title}"
-              style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .3s,transform .38s ease;opacity:0"
-              onload="this.previousElementSibling.style.display='none';this.style.opacity='1'"
-              onerror="this.style.display='none';this.previousElementSibling.style.display='none';this.nextElementSibling.style.display='block'">`
-      + `<div class="card-img-grad" style="background:${c.g};display:none"></div>`
-      : `<div class="card-img-grad" style="background:${c.g}"></div>`;
-    return `<div class="post-card" style="--card-accent:${c.accent}" onclick="openPost('${p.id}')">
-      <div class="card-img" style="position:relative">${media}<span class="cat-chip">${p.category||'General'}</span></div>
+    return `<article class="post-card" role="button" tabindex="0" onclick="openPost('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openPost('${p.id}')} ">
       <div class="card-body">
-        <div class="card-meta"><span>${fmtDate(p.createdAt)}</span><div class="dot"></div><span>${readTime(p.content)}</span></div>
-        <div class="card-title">${p.title}</div>
-        <div class="card-excerpt">${excerpt(p.content)}</div>
+        <div class="card-meta"><span>${p.category||'General'}</span><div class="dot"></div><span>${fmtDate(p.createdAt)}</span><div class="dot"></div><span>${readTime(p.content)}</span></div>
+        <h2 class="card-title">${p.title}</h2>
+        <p class="card-excerpt">${excerpt(p.content)}</p>
         <div class="card-footer">
           <span class="read-more">Read article
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </span>
         </div>
       </div>
-    </div>`;
+    </article>`;
   }
 
   function renderGrid() {
@@ -552,7 +539,7 @@
     const p = load().find(p => p.id === id);
     if (!p) return;
     const c = cc(p.category);
-    const cover = p.coverImage
+    const cover = p.coverImage && !String(p.id).startsWith('s')
       ? `<div class="post-cover-wrap"><img src="${p.coverImage}" alt="${p.title}" class="post-cover-img"></div>`
       : `<div class="post-cover-wrap"><div class="post-cover-grad" style="background:${c.g}"></div></div>`;
     document.getElementById('postContent').innerHTML = `
@@ -563,7 +550,7 @@
       <div class="post-body">${renderMd(p.content)}</div>`;
     document.getElementById('blog-view').style.display = 'none';
     document.getElementById('post-view').style.display = 'block';
-    window.scrollTo({top:0,behavior:'smooth'});
+    window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   }
 
   function showBlog() {
